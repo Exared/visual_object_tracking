@@ -2,41 +2,7 @@ import numpy as np
 import os
 import cv2
 import time
-
-def read_file(filename):
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-    strtok = [line.strip().split(',') for line in lines]
-    #convert to int and add index
-    to_int = []
-    for i, line in enumerate(strtok):
-        to_int.append([int(float(x)) for x in line])
-    return np.array(to_int)
-
-
-
-def compute_similarity(box1, box2):
-    x_inter1 = max(box1[0], box2[0])
-    y_inter1 = max(box1[1], box2[1])
-    x_inter2 = min(box1[2], box2[2])
-    y_inter2 = min(box1[3], box2[3])
-
-    intersection_area = max(0, x_inter2 - x_inter1) * max(0, y_inter2 - y_inter1)
-
-    box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
-    box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
-    union_area = box1_area + box2_area - intersection_area
-
-    if union_area == 0:
-        return 0
-    return intersection_area / union_area
-
-def compute_jaccard(data1, data2):
-    mat = np.zeros((len(data1), len(data2)))
-    for i, d1 in enumerate(data1):
-        for j, d2 in enumerate(data2):
-            mat[i][j] = compute_similarity([d1[2], d1[3], d1[2] + d1[4], d1[3] + d1[5]], [d2[2], d2[3], d2[2] + d2[4], d2[3] + d2[5]])
-    return mat
+from utils import read_file, compute_jaccard
 
 data = read_file('data/tp2/det/det.txt')
 
