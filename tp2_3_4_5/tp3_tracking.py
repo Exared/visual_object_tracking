@@ -36,7 +36,7 @@ for frame_number in range(1, 525):
     else:
         current_track = [track["bbox"] for track in tracks]
         iou_matrix = compute_jaccard(current_track, detections)
-        track_indices, detection_indices = linear_sum_assignment(-iou_matrix)  # Negative for maximization
+        track_indices, detection_indices = linear_sum_assignment(-iou_matrix)
 
         used_detections = set(detection_indices)
         unmatched_tracks = set(range(len(tracks))) - set(track_indices)

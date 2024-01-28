@@ -1,10 +1,6 @@
 
 # ML-Based Visual Object Tracking
 
-Short project blah blah
-
-
-
 ## Usage
 
 **Step 1 : Clone the repo**
@@ -29,6 +25,12 @@ cd visual_object_tracking
 
     ```bash
     python3 tp2_3_4_5/tp2_tracking.py
+    ```
+
++ TP2 + OPTI : Pedestrians tracking *Simple Multi-object IOU Tracker*
+
+    ```bash
+    python3 tp2_3_4_5/tp2_tracking_opti.py
     ```
 
 + TP3 : Pedestrians tracking *Hungarian Algorithm Multi-object IOU Tracker*

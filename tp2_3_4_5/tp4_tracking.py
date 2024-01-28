@@ -50,7 +50,6 @@ for frame_number in range(1, 525):
                 track = tracks[track_idx]
                 det = detections[detection_idx]
                 track['bbox'] = det
-
                 # Update step for Kalman filter
                 z = get_center(det[2:6])
                 track['kf'].update(z)
@@ -71,16 +70,16 @@ for frame_number in range(1, 525):
         # Get estimated state from Kalman filter
         estimated_state = track['kf'].state
         x_est, y_est = estimated_state[0, 0], estimated_state[1, 0]
-        w_est, h_est = track['bbox'][4], track['bbox'][5]  # Width and height from original bbox
+        w_est, h_est = track['bbox'][4], track['bbox'][5]
 
         # Calculate the top left corner of the estimated bbox
         top_left_x_est = int(x_est - w_est / 2)
         top_left_y_est = int(y_est - h_est / 2)
 
-        # Draw estimated bounding box (e.g., in blue)
+        # Draw estimated bounding box
         cv2.rectangle(img, (top_left_x_est, top_left_y_est), (top_left_x_est + w_est, top_left_y_est + h_est), (255, 0, 0), 2)
 
-        # Draw actual detection bounding box (e.g., in green)
+        # Draw actual detection bounding box
         bbox = track['bbox'][2:6]
         cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3])), (0, 0, 255), 2)
         cv2.putText(img, str(track['id']), (top_left_x_est, top_left_y_est - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
