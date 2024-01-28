@@ -37,7 +37,7 @@ cd visual_object_tracking
     python3 tp2_3_4_5/tp3_tracking.py
     ```
 
-    Tracks will be saved into **output/res.txt**
+    Tracks will be saved into **tracking_result_output**
 
 + TP4 : Pedestrians tracking *Hungarian Algorithm + Kalman Multi-object IOU Tracker*
 
@@ -45,13 +45,15 @@ cd visual_object_tracking
     python3 tp2_3_4_5/tp4_tracking.py
     ```
 
+    Tracks will be saved into **tracking_result_output**
+
 + TP5 : Pedestrians tracking *Hungarian Algorithm + Kalman Multi-object IOU Tracker*
 
     ```bash
     python3 tp2_3_4_5/tp5_tracking.py
     ```
 
-    Tracks will be saved into **output/res.txt**
+    Tracks will be saved into **tracking_result_output**
 
 
  

@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 import time
 from scipy.optimize import linear_sum_assignment
 from utils import KalmanFilter, read_file, compute_jaccard, save_tracking_results, get_center
@@ -11,9 +12,18 @@ track_id = 0
 previous_time = 0
 Karman = KalmanFilter(dt=0.1, u_x=1, u_y=1, std_acc=1, x_std_meas=0.1, y_std_meas=0.1)
 
+lower_fps = np.inf
+higher_fps = 0
+average_fps = 0
+
 for frame_number in range(1, 525):
     current_time = time.time()
     fps = 1 / (current_time - previous_time) if previous_time else 0
+    if fps < lower_fps and frame_number > 2: # Ignore first frames
+        lower_fps = fps
+    if fps > higher_fps:
+        higher_fps = fps
+    average_fps += fps
     previous_time = current_time
     filename = "data/tp2/img1/{:06d}.jpg".format(frame_number)
     img = cv2.imread(filename)
@@ -76,10 +86,13 @@ for frame_number in range(1, 525):
         cv2.putText(img, str(track['id']), (top_left_x_est, top_left_y_est - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
 
 
-    save_tracking_results('tracking_result_output/tp4_track_output.txt', tracks, frame_number)
+    save_tracking_results('tracking_result_output/ADL-Rundle-6.txt', tracks, frame_number)
     cv2.putText(img, f'FPS: {fps:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
     cv2.imshow("Tracking", img)
     cv2.waitKey(1)
 
 cv2.destroyAllWindows()
     
+print(f"Lower FPS: {lower_fps}")
+print(f"Higher FPS: {higher_fps}")
+print(f"Average FPS: {average_fps/524}")

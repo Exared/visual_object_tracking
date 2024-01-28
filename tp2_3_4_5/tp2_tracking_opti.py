@@ -2,14 +2,13 @@ import numpy as np
 import os
 import cv2
 import time
-from scipy.optimize import linear_sum_assignment
-from utils import read_file, compute_jaccard, save_tracking_results
+from utils import read_file, compute_jaccard_optimized, save_tracking_results
 
 data = read_file('data/tp2/det/det.txt')
 
 matchthreshold = 0.5
 tracks = []
-track_id = 1
+track_id = 0
 previous_time = 0
 
 lower_fps = np.inf
@@ -35,19 +34,31 @@ for frame_number in range(1, 525):
             track_id += 1
     else:
         current_track = [track["bbox"] for track in tracks]
-        iou_matrix = compute_jaccard(current_track, detections)
-        track_indices, detection_indices = linear_sum_assignment(-iou_matrix)  # Negative for maximization
+        iou_matrix = compute_jaccard_optimized(current_track, detections)
 
-        used_detections = set(detection_indices)
-        unmatched_tracks = set(range(len(tracks))) - set(track_indices)
-        for track_idx, detection_idx in zip(track_indices, detection_indices):
-            if iou_matrix[track_idx, detection_idx] >= matchthreshold:
-                tracks[track_idx]['bbox'] = detections[detection_idx]
+        used_detections = set()
+        tracks_to_delete = []
+
+        # Assign detections to tracks
+        for t_idx, track in enumerate(tracks):
+
+            current_iou_values = iou_matrix[t_idx].copy()
+            for used_idx in used_detections:
+                current_iou_values[used_idx] = -1
+
+            best_idx = np.argmax(current_iou_values)
+
+            if iou_matrix[t_idx][best_idx] >= matchthreshold and best_idx not in used_detections:
+                track['bbox'] = detections[best_idx]
+                used_detections.add(best_idx)
             else:
-                unmatched_tracks.add(track_idx)
+                tracks_to_delete.append(t_idx)
 
-        # Delete unmatched tracks and create new tracks for unmatched detections
-        tracks = [track for idx, track in enumerate(tracks) if idx not in unmatched_tracks]
+        # Delete unmatched tracks
+        for t_idx in sorted(tracks_to_delete, reverse=True):
+            del tracks[t_idx]
+
+        # Create new tracks for unmatched detections
         for d_idx, det in enumerate(detections):
             if d_idx not in used_detections:
                 tracks.append({'id': track_id, 'bbox': det})
